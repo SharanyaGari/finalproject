@@ -419,6 +419,12 @@ main {
   width: 100%;
 }
 
+div.row {
+  padding: 10px;
+  margin-top: 10px;
+  font-size: 1.8em;
+}
+
 .page-area {
   max-width: 768px;
   display: inline-block;
