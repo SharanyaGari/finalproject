@@ -34,7 +34,7 @@ function App() {
           <Route path="/" element={<HomePage/>}/>
         </Routes>
        </div>
-       <Footer></Footer>
+       <Footer initialCount={0}></Footer>
 
 
     </Router>
