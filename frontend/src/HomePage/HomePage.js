@@ -4,9 +4,11 @@ export default function HomePage() {
   return (
     <main className="center" id="main">
       <div className="page-area">
-        <h1>Build and track budgets by creating a financial plan in minutes.</h1>
+        {/* //Accessibility */}
+        <h1 aria-level="3">Build and track budgets by creating a financial plan in minutes.</h1>
         <h2>Keep track of weekly and monthly expenses using Monarch's budgeting tools to keep track of your finances. We'll notify you if you're off your budget targets so you can get back on track. Create a budget today.</h2>
-        <section>
+        {/* //Accessibility */}
+        <section aria-labelledby="PersonalBudgetOptions-heading">
           <article>
             <h1>Never get caught by surprise</h1>
             <p>

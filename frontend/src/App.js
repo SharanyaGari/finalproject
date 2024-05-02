@@ -19,6 +19,7 @@ import DashboardPage from './DashboardPage/DashboardPage';
 import SignupPage from './SignupPage/SignupPage';
 import ConfigureBudget from './ConfigureBudget/ConfigureBudget';
 import BarChart from './DashboardPage/BarChart';
+import Popup from './Popup/Popup';
 
 
 
