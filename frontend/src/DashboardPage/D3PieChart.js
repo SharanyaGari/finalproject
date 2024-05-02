@@ -8,6 +8,7 @@ function D3PieChart() {
   const svgRef = useRef();
 
   useEffect(() => {
+	const token = localStorage.getItem('jwt')
 		const w = 300;
 		const h = 300;
 		const radius = w / 2;
@@ -17,7 +18,13 @@ function D3PieChart() {
 			value: [],
 			backgroundColor: [],
 		}
-    axios.get("http://localhost:80/budget").then(function (res) {
+    axios.get("http://localhost:3001/budget",
+	{
+		headers: {
+		  'Authorization': `Bearer ${token}`
+		}
+	  }
+	  ).then(function (res) {
         for (var i = 0; i < res.data.length; i++) {
 					dataSource.property[i] = res.data[i].title;
 					dataSource.value[i] = res.data[i].budget;
@@ -25,13 +32,13 @@ function D3PieChart() {
         }
 				
 				const backgroundClr =  dataSource.backgroundColor
-				console.log("color ", dataSource)
+				// console.log("color ", dataSource)
 				const colorScale = d3.scaleOrdinal(backgroundClr)
 
 				const formattedData = d3.pie().value((d) => d)(dataSource.value);
 				
 				const currentSvg = svgRef.current
-				console.log("svgRef: ", svgRef.current)
+				// console.log("svgRef: ", svgRef.current)
 				const svg = d3
 					.select(currentSvg)
 					.attr("width", w)

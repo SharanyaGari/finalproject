@@ -431,9 +431,12 @@ div.row {
 }
 
 footer {
-  height: 50px;
+  height: 10px;
   background-color: #b4c6f0;
   padding: 40px;
+  vertical-align: middle;
+  
+  
 }
 
 .skip {
@@ -448,6 +451,8 @@ footer {
 }
 
 .center {
+ 
+  vertical-align: middle;
   text-align: center;
 }
 

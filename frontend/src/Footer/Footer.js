@@ -19,14 +19,14 @@ function Footer() {
         <div className="center">
             All rights reserved &copy; Sharanya Garipally
         </div>
-        <div>
+        <div className="center">
           <h1>
             review: <h4 data-testid="count">{count}</h4>
           </h1>
             
           
         </div>
-        <div>
+        <div className="center">
           <button onClick={increaseReview}>Like</button>
           <button onClick={decreaseReview}>disLike</button>
         </div>

@@ -11,7 +11,16 @@ const dataSchema = new mongoose.Schema({
         trim: true,
         required: true
     },
+    actualSpent: {
+        type: Number,
+        trim: true,
+        required: true
+    },
     color: {
+        type: String,
+        required: true
+    },
+    userId: {
         type: String,
         required: true
     }

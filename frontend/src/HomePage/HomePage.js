@@ -8,30 +8,23 @@ export default function HomePage() {
         <h2>Keep track of weekly and monthly expenses using Monarch's budgeting tools to keep track of your finances. We'll notify you if you're off your budget targets so you can get back on track. Create a budget today.</h2>
         <section>
           <article>
-            <h1>Stay on track</h1>
+            <h1>Never get caught by surprise</h1>
             <p>
-              Do you know where you are spending your money? If you really stop
-              to track it down, you would get surprised! Proper budget
-              management depends on real data... and this app will help you with
-              that!
+            Get up-to-the-minute numbers that adjust as you spend — so you always know where you stand.
             </p>
           </article>
 
           <article>
-            <h1>Stay on track</h1>
+            <h1>Manage your budget </h1>
             <p>
-              Do you know where you are spending your money? If you really stop
-              to track it down, you would get surprised! Proper budget
-              management depends on real data... and this app will help you with
-              that!
+            Make goal-setting part of your budget. Plan to pay off debt, save for a big purchase, or stash away for a rainy day.
             </p>
           </article>
 
           <article>
-            <h1>Alerts</h1>
+            <h1>Treat yourself — with confidence</h1>
             <p>
-              What if your clothing budget ended? You will get an alert. The
-              goal is to never go over the budget.
+            When you know what’s left after your needs are covered, you can throw down your card without a care in the world.
             </p>
 
             <aside>
@@ -40,7 +33,7 @@ export default function HomePage() {
           </article>
 
           <article>
-            <h1>Results</h1>
+            <h1>Best-in-class data connectivity</h1>
             <p>
               People who stick to a financial plan, budgeting every expense, get
               out of debt faster! Also, they to live happier lives... since they
@@ -50,14 +43,14 @@ export default function HomePage() {
           </article>
 
           <article>
-            <h1>Free</h1>
+            <h1>Flexible</h1>
             <p>
-              This app is free!!! And you are the only one holding your data!
+            Create a budget with custom categories and rollovers to help you stay on track. You can budget every category, or budget at the group level, whatever works for you. We'll help you stay on track with automatic notifications.
             </p>
           </article>
 
           <article>
-            <h1>Stay on track</h1>
+            <h1>Always on track. Never behind</h1>
             <p>
               Do you know where you are spending your money? If you really stop
               to track it down, you would get surprised! Proper budget
@@ -67,20 +60,16 @@ export default function HomePage() {
           </article>
 
           <article>
-            <h1>Alerts</h1>
+            <h1>The all-in-one money platform</h1>
             <p>
-              What if your clothing budget ended? You will get an alert. The
-              goal is to never go over the budget.
+            Bring together everything you need to manage your finances effectively. You can collaborate with your partner or financial advisor at no extra cost, and access it on web, iOS, and Android
             </p>
           </article>
 
           <article>
-            <h1>Results</h1>
+            <h1>See exactly where your money is going</h1>
             <p>
-              People who stick to a financial plan, budgeting every expense, get
-              out of debt faster! Also, they to live happier lives... since they
-              expend without guilt or fear... because they know it is all good
-              and accounted for.
+            Our diagrams and charts make it easy to see where every dollar of your hard-earned money is flowing, so you can track your spending patterns at a glance.
             </p>
           </article>
         </section>
