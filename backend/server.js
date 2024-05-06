@@ -2,7 +2,7 @@ const express = require("express");
 const mongoose = require("mongoose");
 const dataModel = require("./modules/data_schema");
 const userSchema = require("./modules/users_schema");
-const tokensSchema = require("./modules/token_schema")
+const tokensSchema = require("./modules/token_schema");
 const url = "mongodb://localhost:27017/mongoosedb";
 const bodyParser = require("body-parser");
 // const urlencodedParser = bodyParser.urlencoded({ extended: false })
@@ -34,7 +34,6 @@ const jwtMW = exjwt({
   algorithms: ["HS256"],
 });
 
-
 app.use(function (err, req, res, next) {
   console.log(err.name === "UnauthorizedError");
   console.log(err);
@@ -51,66 +50,68 @@ app.use(function (err, req, res, next) {
 app.post("/login", async (req, res) => {
   const { username, password } = req.body;
 
-  const mongoConnection = await mongoose.connect(url);
-  const userData = await userSchema.findOne({ username, createpassword: password })
-  
+  await mongoose.connect(url);
+  const userData = await userSchema.findOne({
+    username,
+    createpassword: password,
+  });
+
   if (!userData) {
     res.status(401).json({
-        success: false,
-        token: null,
-        err: 'username or password is incorrect'
+      success: false,
+      token: null,
+      err: "username or password is incorrect",
     });
   } else {
-    const userId = userData._id
-    const token = jwt.sign({ id: userId }, secretKey, {expiresIn: '60s'});
-    const refreshToken = jwt.sign(
-      { id: userId },
-      secretKey,
-      { expiresIn: "30d" }
-    );
-    const tokenExpiresBy =  Date.now() + 5000
+    const userId = userData._id;
+    const tokenExpiresBy = Date.now() + 60 * 1000;
+    const token = jwt.sign({ id: userId }, secretKey, { expiresIn: tokenExpiresBy });
+    const refreshTokenExpiry = Date.now() + 30 * 24 * 60 * 60 * 1000;
+    const refreshToken = jwt.sign({ id: userId }, secretKey, {
+      expiresIn: refreshTokenExpiry,
+    });
     const tokensData = new tokensSchema({
       userId,
       refreshToken,
-      expirationTime: tokenExpiresBy
-    })
-    const tokenInsert = await tokensSchema.insertMany(tokensData)
-
+      expirationTime: refreshTokenExpiry,
+    });
+    await tokensSchema.insertMany(tokensData);
+    mongoose.connection.close()
     res.json({
       success: true,
       err: null,
       token,
       refreshToken,
-      expiresBy: tokenExpiresBy
+      expiresBy: tokenExpiresBy,
     });
   }
 });
 
 app.post("/signup", async (req, res) => {
-  const { username, createpassword } = req.body;
-  
   try {
     const mongoConnection = await mongoose.connect(url);
     const newData = new userSchema(req.body);
     console.log("Inserting data: ", req.body);
     console.log("Inserting data: ", newData);
-    const data = await userSchema.insertMany(newData)
-    const userId = newData._id
+    const data = await userSchema.insertMany(newData);
+    const userId = newData._id;
     console.log(`userId: ${userId}`);
 
-    const token = jwt.sign({ id: userId }, secretKey, {expiresIn: '5s'});
-    const tokenExpiresBy =  Date.now() + 5000
-    const refreshToken = jwt.sign(
-      { id: userId },
-      secretKey,
-      { expiresIn: "30d" }
-    );
+    const tokenExpiresBy = Date.now() + 60 * 1000;
+    const token = jwt.sign({ id: userId }, secretKey, {
+      expiresIn: tokenExpiresBy,
+    });
+    const refreshTokenExpiry = Date.now() + 30 * 24 * 60 * 60 * 1000;
+
+    const refreshToken = jwt.sign({ id: userId }, secretKey, {
+      expiresIn: refreshTokenExpiry,
+    });
     const tokensData = new tokensSchema({
       userId,
       refreshToken,
-      expirationTime: tokenExpiresBy
-    })
-    const tokenInsert = await tokensSchema.insertMany(tokensData)
+      expirationTime: refreshTokenExpiry,
+    });
+    const tokenInsert = await tokensSchema.insertMany(tokensData);
     console.log("successfully inserted data and token");
     mongoose.connection.close();
 
@@ -119,9 +120,9 @@ app.post("/signup", async (req, res) => {
       err: null,
       token,
       refreshToken,
-      expiresBy: tokenExpiresBy
+      expiresBy: tokenExpiresBy,
     });
-  } catch(error) {
+  } catch (error) {
     console.log(error);
     res.json({
       errorCode: 500,
@@ -133,16 +134,22 @@ app.post("/signup", async (req, res) => {
 app.post("/configure", (req, res) => {
   const { title, budget, actualSpent, color } = req.body;
   const token = req.headers.authorization.split(" ")[1];
- 
+
   const parsedToken = JSON.parse(atob(token.split(".")[1]));
-  
+
   const userId = parsedToken.id;
-  
+
   console.log("signed in for", title, budget, actualSpent, color);
   mongoose
     .connect(url)
     .then(() => {
-      const newData = new dataModel({ title, budget, actualSpent, color, userId });
+      const newData = new dataModel({
+        title,
+        budget,
+        actualSpent,
+        color,
+        userId,
+      });
       console.log("Inserting data: ", req.body);
       console.log("Inserting data: ", newData);
       dataModel
@@ -167,12 +174,13 @@ app.post("/configure", (req, res) => {
 
 app.get("/budget", (req, res) => {
   console.log("fetching budget...");
-  if (req.headers.authorization) {
-    //console.log("request: ", req)
-    //console.log("request headers: ", req.headers)
-    const token = req.headers.authorization.split(" ")[1];
-    console.log("token found: ", token);
-    const parsedToken = JSON.parse(atob(token.split(".")[1]));
+  const token = req.headers.authorization?.split(" ")[1];
+  console.log("token found: ", token);
+  const parsedToken = JSON.parse(atob(token?.split(".")[1]));
+  console.log(`budget fetch -- parsedToken: ${JSON.stringify(parsedToken)}`)
+  const tokenExpiry = parsedToken?.exp;
+  console.log(`budget fetch -- tokenExpiry: ${tokenExpiry}, now: ${Date.now()}`)
+  if (!!tokenExpiry && tokenExpiry > Date.now()) {
     console.log("parsed token: ", parsedToken);
     const userId = parsedToken.id;
     console.log("user id in token: ", userId);
@@ -183,7 +191,6 @@ app.get("/budget", (req, res) => {
         dataModel
           .find({ userId })
           .then((data) => {
-            console.log(data);
             mongoose.connection.close();
             res.json(data);
           })
@@ -198,20 +205,28 @@ app.get("/budget", (req, res) => {
     res.status(401).json({
       success: false,
       token: null,
-      err: 'no authorized'
+      err: "no authorized",
     });
   }
 });
 
 app.post("/refresh-token", async (req, res) => {
-  const refreshToken = req.body.refreshToken
+  const refreshToken = req.body.refreshToken;
   console.log("refreshing token: ", refreshToken);
   try {
-    const mongooseConnection = await mongoose.connect(url)
+    await mongoose.connect(url);
     const refreshTokenData = await tokensSchema.findOne({ refreshToken });
     console.log("token data in db : ", refreshTokenData);
-    const refreshTokenInDb = refreshTokenData?.refreshToken
-    const userInDb = refreshTokenData?.userId
+    const refreshTokenInDb = refreshTokenData?.refreshToken;
+    const userInDb = refreshTokenData?.userId;
+    // const parsedRefreshTokenInDb = JSON.parse(
+    //   atob(refreshTokenInDb?.split(".")[1])
+    // );
+    // const refreshTokenExpiry = parsedRefreshTokenInDb?.exp;
+    const refreshTokenExpiry = refreshTokenData?.expirationTime;
+    const hasRefreshTokenExpired = refreshTokenExpiry
+      ? Date.now() > refreshTokenExpiry
+      : true;
     const token = req.headers.authorization.split(" ")[1];
     console.log("token found: ", token);
     const parsedToken = JSON.parse(atob(token.split(".")[1]));
@@ -219,9 +234,23 @@ app.post("/refresh-token", async (req, res) => {
     const userId = parsedToken.id;
     console.log("user id in token: ", userId);
     console.log("Connected to Database");
-    if (userId == userInDb && refreshTokenInDb) {
-      const token = jwt.sign({ id: userId }, secretKey, {expiresIn: '5s'});
-      const tokenExpiresBy =  Date.now() + 5000
+    console.log(`refresh token-- checking conditions -- 
+      userId: ${userId}, 
+      userIdInDb: ${userInDb}, 
+      refreshTokenInDb: ${refreshTokenInDb}, 
+      refreshToken: ${refreshToken}, 
+      refreshTokenExpiry: ${refreshTokenExpiry}, 
+      now: ${Date.now()},
+      hasRefreshTokenExpired: ${hasRefreshTokenExpired}`
+    )
+    if (
+      userId == userInDb &&
+      refreshTokenInDb &&
+      refreshTokenInDb == refreshToken &&
+      !hasRefreshTokenExpired
+    ) {
+      const tokenExpiresBy = Date.now() + 60 * 1000;
+      const token = jwt.sign({ id: userId }, secretKey, { expiresIn: tokenExpiresBy });
       // const refreshToken = jwt.sign(
       //   { id: userId },
       //   secretKey,
@@ -239,14 +268,47 @@ app.post("/refresh-token", async (req, res) => {
         success: true,
         err: null,
         token,
-        expiresBy: tokenExpiresBy
+        expiresBy: tokenExpiresBy,
       });
     } else {
       mongoose.connection.close();
       res.status(401).json({
         success: false,
         token: null,
-        err: 'no authorized'
+        err: "no authorized",
+      });
+    }
+  } catch (error) {
+    console.log(error);
+    res.json({
+      errorCode: 500,
+      message: error.writeErrors[0].err.errmsg,
+    });
+  }
+});
+
+app.get("/logout", async (req, res) => {
+  try {
+    const mongoConnection = await mongoose.connect(url);
+    const token = req.headers.authorization.split(" ")[1];
+    if (token) {
+      console.log("token found for logout: ", token);
+      const parsedToken = JSON.parse(atob(token.split(".")[1]));
+      console.log("parsed token for logout: ", parsedToken);
+      const userId = parsedToken.id;
+      console.log("user id in token for logout: ", userId);
+      console.log("Connected to Database");
+      const deleteToken = await tokensSchema.deleteMany({ userId });
+      console.log("successfully deleted user token");
+      mongoose.connection.close();
+      console.log("mongoose connection closed");
+      res.status(200).json({
+        success: true,
+      });
+    } else {
+      res.status(401).json({
+        success: false,
+        err: "no authorized",
       });
     }
   } catch (error) {

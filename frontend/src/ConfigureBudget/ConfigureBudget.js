@@ -1,25 +1,32 @@
 import React, { useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import { useAuthContext } from '../AuthContext/AuthContext';
+import { useAuthContext } from "../AuthContext/AuthContext";
 
 export default function ConfigureBudget() {
   const navigate = useNavigate();
   const token = localStorage.getItem("jwt");
-  const { authState, setAuthState } = useAuthContext(); 
+  const { authState, setAuthState } = useAuthContext();
 
-  function submitBudgets(){
-    navigate("/dashboard");
-
+  const logout = async () => {
+    const token = localStorage.getItem('jwt')
+    await axios.get(
+      "http://localhost:3001/logout",
+      {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      }
+    )
+    setAuthState({expiresAt: null, isAuthenticated: false, tokenAboutToExpire: false})
+    navigate("/");
   }
 
-  // function isTokenExpired(token) {
-  //   const expiry = JSON.parse(atob(token.split(".")[1])).exp;
-  //   return Math.floor(new Date().getTime() / 1000) >= expiry;
-  // }
+  function submitBudgets() {
+    navigate("/dashboard");
+  }
 
   function addBudgets() {
-
     const budgetData = {
       title: document.getElementById("title").value,
       budget: document.getElementById("budget").value,
@@ -28,30 +35,27 @@ export default function ConfigureBudget() {
     };
     console.log("data is", budgetData);
     console.log("got token to add budgets", token);
-    axios.post(
-      "http://localhost:3001/configure", 
-      budgetData,
-      {
+    axios
+      .post("http://localhost:3001/configure", budgetData, {
         headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      },
-    ).then((res) => {
-      console.log("response for signup is", res);
-          document.getElementById("title").value = ''
-          document.getElementById("budget").value = ''
-          document.getElementById("actualSpent").value = ''
-          document.getElementById("color").value = ''
-      //   window.location.href = '/ConfigureBudget'
-    });
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      .then((res) => {
+        console.log("response for signup is", res);
+        document.getElementById("title").value = "";
+        document.getElementById("budget").value = "";
+        document.getElementById("actualSpent").value = "";
+        document.getElementById("color").value = "";
+      });
   }
 
   useEffect(() => {
-    if (authState.isAuthenticated) {
-      console.log("token expired or no token found")
-      navigate("/");
+    if (!authState.isAuthenticated) {
+      console.log("token expired or no token found");
+      logout()
     }
-  });
+  }, [authState]);
 
   return (
     <div className="LPage">
