@@ -2,6 +2,7 @@ const express = require("express");
 const mongoose = require("mongoose");
 const dataModel = require("./modules/data_schema");
 const userSchema = require("./modules/users_schema");
+const tokensSchema = require("./modules/token_schema")
 const url = "mongodb://localhost:27017/mongoosedb";
 const bodyParser = require("body-parser");
 // const urlencodedParser = bodyParser.urlencoded({ extended: false })
@@ -61,72 +62,72 @@ app.post("/login", async (req, res) => {
     });
   } else {
     const userId = userData._id
- 
-
-    const token = jwt.sign({ id: userId }, secretKey, {expiresIn: '180s'});
+    const token = jwt.sign({ id: userId }, secretKey, {expiresIn: '60s'});
+    const refreshToken = jwt.sign(
+      { id: userId },
+      secretKey,
+      { expiresIn: "30d" }
+    );
+    const tokenExpiresBy =  Date.now() + 5000
+    const tokensData = new tokensSchema({
+      userId,
+      refreshToken,
+      expirationTime: tokenExpiresBy
+    })
+    const tokenInsert = await tokensSchema.insertMany(tokensData)
 
     res.json({
       success: true,
       err: null,
-      token
+      token,
+      refreshToken,
+      expiresBy: tokenExpiresBy
     });
   }
-  // for(let user of users){
-  //     if(username == user.username && password == user.password){
-  //         res.json({
-  //             success: true,
-  //             err: null,
-  //             token
-  //         });
-  //         break;
-  //     }
-  //     else {
-  //         res.status(401).json({
-  //             success: false,
-  //             token: null,
-  //             err: 'username or password is incorrect'
-  //         });
-
-  //     }
-  // }
 });
 
-app.post("/signup", (req, res) => {
+app.post("/signup", async (req, res) => {
   const { username, createpassword } = req.body;
   
-  mongoose
-    .connect(url)
-    .then(() => {
-      const newData = new userSchema(req.body);
-      console.log("Inserting data: ", req.body);
-      console.log("Inserting data: ", newData);
-      userSchema
-        .insertMany(newData)
-        .then((data) => {
-          const userId = newData._id
-          console.log(`userId: ${userId}`);
+  try {
+    const mongoConnection = await mongoose.connect(url);
+    const newData = new userSchema(req.body);
+    console.log("Inserting data: ", req.body);
+    console.log("Inserting data: ", newData);
+    const data = await userSchema.insertMany(newData)
+    const userId = newData._id
+    console.log(`userId: ${userId}`);
 
-          const token = jwt.sign({ id: userId }, secretKey, {expiresIn: '180s'});
-          console.log("successfully inserted data");
-          res.json({
-            success: true,
-            err: null,
-            token,
-          });
-          //res.sendStatus(200);
-          mongoose.connection.close();
-        })
-        .catch((error) => {
-          res.json({
-            errorCode: 500,
-            message: error.writeErrors[0].err.errmsg,
-          });
-          console.log(error);
-        });
+    const token = jwt.sign({ id: userId }, secretKey, {expiresIn: '5s'});
+    const tokenExpiresBy =  Date.now() + 5000
+    const refreshToken = jwt.sign(
+      { id: userId },
+      secretKey,
+      { expiresIn: "30d" }
+    );
+    const tokensData = new tokensSchema({
+      userId,
+      refreshToken,
+      expirationTime: tokenExpiresBy
     })
-    .catch((connectionError) => {
-      console.log(connectionError);
+    const tokenInsert = await tokensSchema.insertMany(tokensData)
+    console.log("successfully inserted data and token");
+    mongoose.connection.close();
+
+    res.json({
+      success: true,
+      err: null,
+      token,
+      refreshToken,
+      expiresBy: tokenExpiresBy
     });
+  } catch(error) {
+    console.log(error);
+    res.json({
+      errorCode: 500,
+      message: error.writeErrors[0].err.errmsg,
+    });
+  }
 });
 
 app.post("/configure", (req, res) => {
@@ -183,8 +184,8 @@ app.get("/budget", (req, res) => {
           .find({ userId })
           .then((data) => {
             console.log(data);
-            res.json(data);
             mongoose.connection.close();
+            res.json(data);
           })
           .catch((connectionError) => {
             console.log(connectionError);
@@ -198,6 +199,61 @@ app.get("/budget", (req, res) => {
       success: false,
       token: null,
       err: 'no authorized'
+    });
+  }
+});
+
+app.post("/refresh-token", async (req, res) => {
+  const refreshToken = req.body.refreshToken
+  console.log("refreshing token: ", refreshToken);
+  try {
+    const mongooseConnection = await mongoose.connect(url)
+    const refreshTokenData = await tokensSchema.findOne({ refreshToken });
+    console.log("token data in db : ", refreshTokenData);
+    const refreshTokenInDb = refreshTokenData?.refreshToken
+    const userInDb = refreshTokenData?.userId
+    const token = req.headers.authorization.split(" ")[1];
+    console.log("token found: ", token);
+    const parsedToken = JSON.parse(atob(token.split(".")[1]));
+    console.log("parsed token: ", parsedToken);
+    const userId = parsedToken.id;
+    console.log("user id in token: ", userId);
+    console.log("Connected to Database");
+    if (userId == userInDb && refreshTokenInDb) {
+      const token = jwt.sign({ id: userId }, secretKey, {expiresIn: '5s'});
+      const tokenExpiresBy =  Date.now() + 5000
+      // const refreshToken = jwt.sign(
+      //   { id: userId },
+      //   secretKey,
+      //   { expiresIn: "30d" }
+      // );
+      // const tokensData = new tokensSchema({
+      //   userId,
+      //   refreshToken,
+      //   expirationTime: tokenExpiresBy
+      // })
+      // const tokenInsert = await tokensSchema.insertMany(tokensData)
+      console.log("successfully inserted data and token");
+      mongoose.connection.close();
+      res.json({
+        success: true,
+        err: null,
+        token,
+        expiresBy: tokenExpiresBy
+      });
+    } else {
+      mongoose.connection.close();
+      res.status(401).json({
+        success: false,
+        token: null,
+        err: 'no authorized'
+      });
+    }
+  } catch (error) {
+    console.log(error);
+    res.json({
+      errorCode: 500,
+      message: error.writeErrors[0].err.errmsg,
     });
   }
 });

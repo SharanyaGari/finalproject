@@ -3,9 +3,11 @@ import React from 'react';
 import axios from 'axios';
 import ConfigureBudget from '../ConfigureBudget/ConfigureBudget';
 import { useNavigate } from "react-router-dom";
+import { useAuthContext } from '../AuthContext/AuthContext';
 
 export default function SignupPage() {
   const navigate = useNavigate();
+  const { authState, setAuthState } = useAuthContext();
 
   function signup() {
 
@@ -19,7 +21,11 @@ export default function SignupPage() {
       if(res && res.data && res.data.token) {
         console.log('response for signup is', res)
         const token = res.data.token;
+        const refreshToken = res.data.refreshToken;
+        const expiresAt = res.data.expiresAt
         localStorage.setItem('jwt', token);
+        localStorage.setItem('refresh_token', refreshToken);
+        setAuthState({expiresAt: Date.now() + 20 * 1000, isAuthenticated: true, tokenAboutToExpire: false})
         navigate("/ConfigureBudget");
         //window.location.href = '/dashboard'
        //console.log(res.data.username);

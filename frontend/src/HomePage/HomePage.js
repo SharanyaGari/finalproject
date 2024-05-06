@@ -28,7 +28,7 @@ export default function HomePage() {
             <p>
             When you know what’s left after your needs are covered, you can throw down your card without a care in the world.
             </p>
-
+            {/* //Accessibility  */}
             <aside>
               <p>On Budget</p>
             </aside>

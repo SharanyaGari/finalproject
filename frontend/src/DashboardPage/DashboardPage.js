@@ -5,12 +5,18 @@ import { useNavigate } from "react-router-dom";
 import * as d3 from "d3";
 import D3PieChart from "./D3PieChart";
 import BarChart from "./BarChart";
+import { useAuthContext } from '../AuthContext/AuthContext';
+import LoginPopup from "../Popup/LoginPopup";
 
 export default function DashboardPage() {
 
   const navigate = useNavigate();
+  const { authState, setAuthState } = useAuthContext(); 
+
+  const isTokenExpiring = authState.tokenAboutToExpire
 
   const logout = () => {
+    setAuthState({expiresAt: null, isAuthenticated: false, tokenAboutToExpire: false})
     navigate("/");
     //window.location.href = '/'
   }
@@ -19,18 +25,13 @@ export default function DashboardPage() {
     navigate("/ConfigureBudget");
     //window.location.href = '/'
   }
-
-  function isTokenExpired(token) {
-    const expiry = (JSON.parse(atob(token.split('.')[1]))).exp;
-    return (Math.floor((new Date()).getTime() / 1000)) >= expiry;
-  }
-
+   //Accessibility 
   const chartRef = useRef();
 
   useEffect(() => {
     const token = localStorage.getItem('jwt')
     console.log("got token to fetch budgets: ", token)
-    if (token && !isTokenExpired(token)) {
+    if (authState.isAuthenticated) {
       let dataSourceRef = {
           datasets: [
             {
@@ -69,32 +70,39 @@ export default function DashboardPage() {
       console.log("no token found or token expired")
       logout()
     }
-  });
+  }, []);
 
   return (
-    <main className="center" id="main">
-      <div className="page-area">
-        <section>
-          <article>
-            <h1> Pie Chart</h1>
-            <p>
-              <canvas ref={chartRef} />
-            </p>
+    // <div>
+    //   { isTokenExpiring ? (
+    //     <LoginPopup />
+    //   ) : (
+        <main className="center" id="main">
+          <div className="page-area">
+            <section>
+              <article>
+                <h1> Pie Chart</h1>
+                <p>
+                  <canvas ref={chartRef} />
+                </p>
 
-            <h1>D3 Chart</h1>
-            <D3PieChart />
-            <h1>Bar Chart</h1>
-            <BarChart/>
-          </article>
-        </section>
-      </div>
-      <div className = "row">
-          <button onClick={addBudgets}>Add Budgets</button>
-        </div>
-      <div className = "row">
-          <button id="logout" onClick={logout}>Logout</button>
-        </div>
-    </main>
+                <h1>D3 Chart</h1>
+                <D3PieChart />
+                <h1>Bar Chart</h1>
+                <BarChart/>
+              </article>
+            </section>
+          </div>
+          <div className = "row">
+            <button onClick={addBudgets}>Add Budgets</button>
+          </div>
+          <div className = "row">
+          {/* //Accessibility  */}
+            <button id="logout" onClick={logout}>Logout</button>
+          </div>
+        </main>
+        // ) }
+    // </div>
   );
 }
 

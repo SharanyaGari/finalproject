@@ -1,23 +1,24 @@
 import React, { useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { useAuthContext } from '../AuthContext/AuthContext';
 
 export default function ConfigureBudget() {
   const navigate = useNavigate();
   const token = localStorage.getItem("jwt");
+  const { authState, setAuthState } = useAuthContext(); 
 
   function submitBudgets(){
     navigate("/dashboard");
 
   }
 
-  function isTokenExpired(token) {
-    const expiry = JSON.parse(atob(token.split(".")[1])).exp;
-    return Math.floor(new Date().getTime() / 1000) >= expiry;
-  }
+  // function isTokenExpired(token) {
+  //   const expiry = JSON.parse(atob(token.split(".")[1])).exp;
+  //   return Math.floor(new Date().getTime() / 1000) >= expiry;
+  // }
 
   function addBudgets() {
-
 
     const budgetData = {
       title: document.getElementById("title").value,
@@ -46,7 +47,7 @@ export default function ConfigureBudget() {
   }
 
   useEffect(() => {
-    if (!token || isTokenExpired(token)) {
+    if (authState.isAuthenticated) {
       console.log("token expired or no token found")
       navigate("/");
     }

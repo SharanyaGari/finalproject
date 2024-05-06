@@ -385,7 +385,7 @@ nav ul li a {
 
 nav ul li a:hover  {
   background-color: white;
-  color: #4d5791;
+  color: #DEB887;
 }
 
 div.hero {
@@ -432,8 +432,8 @@ div.row {
 
 footer {
   height: 10px;
-  background-color: #b4c6f0;
-  padding: 40px;
+  background-color: #DEB887;
+  padding: 10px;
   vertical-align: middle;
   
   
@@ -479,6 +479,35 @@ svg {
   stroke-width:2px;
   }
 
+  /* .modal {
+    width: 500px;
+    background: white;
+    border: 1px solid #ccc;
+    transition: 1.1s ease-out;
+    box-shadow: -2rem 2rem 2rem rgba(black, 0.2);
+    filter: blur(0);
+    transform: scale(1);
+    opacity: 1;
+    visibility: visible;
+  } */
+
+  .modal {
+    position: absolute;
+    top: 40px;
+    left: 40px;
+    right: 40px;
+    bottom: 40px;
+    background-color: white;
+  }
+
+  .overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rebeccapurple;
+  }
 
 
 @media screen and (min-width: 768px) {

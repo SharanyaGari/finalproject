@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testng-results ignored="0" total="1" passed="1" failed="0" skipped="0">
+  <reporter-output>
+  </reporter-output>
+  <suite started-at="2024-05-03T10:23:48 EDT" name="Default suite" finished-at="2024-05-03T10:24:03 EDT" duration-ms="14965">
+    <groups>
+    </groups>
+    <test started-at="2024-05-03T10:23:48 EDT" name="Default test" finished-at="2024-05-03T10:24:03 EDT" duration-ms="14965">
+      <class name="test1.visual.App">
+        <test-method is-config="true" signature="beforeEach()[pri:0, instance:test1.visual.App@7ce69770]" started-at="2024-05-03T10:23:48 EDT" name="beforeEach" finished-at="2024-05-03T10:23:57 EDT" duration-ms="9549" status="PASS">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- beforeEach -->
+        <test-method signature="myTestCase()[pri:0, instance:test1.visual.App@7ce69770]" started-at="2024-05-03T10:23:57 EDT" name="myTestCase" finished-at="2024-05-03T10:24:03 EDT" duration-ms="5300" status="PASS">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- myTestCase -->
+        <test-method is-config="true" signature="afterEach()[pri:0, instance:test1.visual.App@7ce69770]" started-at="2024-05-03T10:24:03 EDT" name="afterEach" finished-at="2024-05-03T10:24:03 EDT" duration-ms="85" status="PASS">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- afterEach -->
+      </class> <!-- test1.visual.App -->
+    </test> <!-- Default test -->
+  </suite> <!-- Default suite -->
+</testng-results>

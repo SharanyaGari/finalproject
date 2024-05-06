@@ -10,6 +10,7 @@ function Menu() {
 
     // {/* //Accessibility */}
     <nav aria-describedby="A navigation element for the home page">
+      {/* //Accessibility  */}
         <ul>
           {/* //Accessibility */}
             <li aria-label="Know more about this page"><Link to="/">Home</Link></li>
