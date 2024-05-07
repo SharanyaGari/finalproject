@@ -3,7 +3,7 @@ const mongoose = require("mongoose");
 const dataModel = require("./modules/data_schema");
 const userSchema = require("./modules/users_schema");
 const tokensSchema = require("./modules/token_schema");
-const url = "mongodb://localhost:27017/mongoosedb";
+const url = "mongodb+srv://sherry:w4m0X1k7Q9Iq5B68@db-mongodb-nyc3-37835-3abdbc46.mongo.ondigitalocean.com/budgeting?tls=true&authSource=admin&replicaSet=db-mongodb-nyc3-37835";
 const bodyParser = require("body-parser");
 // const urlencodedParser = bodyParser.urlencoded({ extended: false })
 const jsonParser = bodyParser.json({ extended: false });
