@@ -3,16 +3,14 @@ const mongoose = require("mongoose");
 const dataModel = require("./modules/data_schema");
 const userSchema = require("./modules/users_schema");
 const tokensSchema = require("./modules/token_schema");
-const url = "mongodb+srv://sherry:w4m0X1k7Q9Iq5B68@db-mongodb-nyc3-37835-3abdbc46.mongo.ondigitalocean.com/budgeting?tls=true&authSource=admin&replicaSet=db-mongodb-nyc3-37835";
 const bodyParser = require("body-parser");
-// const urlencodedParser = bodyParser.urlencoded({ extended: false })
-const jsonParser = bodyParser.json({ extended: false });
-
 const jwt = require("jsonwebtoken");
 const { expressjwt: exjwt } = require("express-jwt");
 const jwtDecode = require("jwt-decode");
-
 const cors = require("cors");
+require("dotenv").config()
+
+const jsonParser = bodyParser.json({ extended: false });
 
 const app = express();
 
@@ -25,7 +23,8 @@ app.use((req, res, next) => {
   next();
 });
 app.use(cors());
-const port = 3001;
+const port = process.env.PORT || 3001;
+const mongoUrl = process.env.MONGO_URL || "mongodb://localhost:27017/mongoosedb"
 
 const secretKey = "My super secret key";
 
@@ -49,7 +48,7 @@ app.use(function (err, req, res, next) {
 
 app.get("/mongo", async (req, res) => {
   try {
-    await mongoose.connect(url);
+    await mongoose.connect(mongoUrl);
     console.log("mongo connected!!")
     mongoose.connection.close();
     return res.status(200).json({msg: "mongo connected"})
@@ -65,7 +64,7 @@ app.get("/mongo", async (req, res) => {
 app.post("/login", async (req, res) => {
   const { username, password } = req.body;
 
-  await mongoose.connect(url);
+  await mongoose.connect(mongoUrl);
   const userData = await userSchema.findOne({
     username,
     createpassword: password,
@@ -104,7 +103,7 @@ app.post("/login", async (req, res) => {
 
 app.post("/signup", async (req, res) => {
   try {
-    const mongoConnection = await mongoose.connect(url);
+    const mongoConnection = await mongoose.connect(mongoUrl);
     const newData = new userSchema(req.body);
     console.log("Inserting data: ", req.body);
     console.log("Inserting data: ", newData);
@@ -229,7 +228,7 @@ app.post("/refresh-token", async (req, res) => {
   const refreshToken = req.body.refreshToken;
   console.log("refreshing token: ", refreshToken);
   try {
-    await mongoose.connect(url);
+    await mongoose.connect(mongoUrl);
     const refreshTokenData = await tokensSchema.findOne({ refreshToken });
     console.log("token data in db : ", refreshTokenData);
     const refreshTokenInDb = refreshTokenData?.refreshToken;
@@ -304,7 +303,7 @@ app.post("/refresh-token", async (req, res) => {
 
 app.get("/logout", async (req, res) => {
   try {
-    const mongoConnection = await mongoose.connect(url);
+    const mongoConnection = await mongoose.connect(mongoUrl);
     const token = req.headers.authorization.split(" ")[1];
     if (token) {
       console.log("token found for logout: ", token);
