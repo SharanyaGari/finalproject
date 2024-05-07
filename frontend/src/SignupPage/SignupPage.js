@@ -7,8 +7,8 @@ export default function SignupPage() {
   const navigate = useNavigate();
   const { setAuthState } = useAuthContext();
 
-  const serverUrl = process.env.SERVER_URL || "localhost:3001"
-  const serverProtocol = process.env.SERVER_PROTOCOL || "http"
+  const serverUrl = process.env.SERVER_URL || "goldfish-app-e5tzq.ondigitalocean.app/finalproject-backend"
+  const serverProtocol = process.env.SERVER_PROTOCOL || "https"
 
   function signup() {
     const newdata = {
