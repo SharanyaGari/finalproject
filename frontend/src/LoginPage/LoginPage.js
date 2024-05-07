@@ -12,7 +12,7 @@ export default function LoginPage() {
       username: document.getElementById("username").value,
       password: document.getElementById("password").value,
     };
-    axios.post("https://https://goldfish-app-e5tzq.ondigitalocean.app/finalproject-backend/login", data).then((res) => {
+    axios.post("https://goldfish-app-e5tzq.ondigitalocean.app/finalproject-backend/login", data).then((res) => {
       console.log("username is", res);
       document.getElementById("username").value = "";
       document.getElementById("password").value = "";
