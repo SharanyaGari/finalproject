@@ -6,8 +6,8 @@ import { useAuthContext } from "../AuthContext/AuthContext";
 export default function LoginPage() {
   const navigate = useNavigate();
   const { setAuthState } = useAuthContext();
-  const serverUrl = process.env.SERVER_URL || "localhost:3001"
-  const serverProtocol = process.env.SERVER_PROTOCOL || "http"
+  const serverUrl = "localhost:3001" // process.env.SERVER_URL
+  const serverProtocol = "http" // process.env.SERVER_PROTOCOL
 
   function login() {
     const data = {
