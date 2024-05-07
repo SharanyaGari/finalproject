@@ -3,9 +3,7 @@ import "./App.css";
 import "./pb.sass";
 import { Modal, Button } from "react-bootstrap";
 import axios from "axios";
-
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
-
 import Menu from "./Menu/Menu";
 import Hero from "./Hero/Hero";
 import Footer from "./Footer/Footer";

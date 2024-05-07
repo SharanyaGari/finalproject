@@ -6,13 +6,15 @@ import { useAuthContext } from "../AuthContext/AuthContext";
 export default function LoginPage() {
   const navigate = useNavigate();
   const { setAuthState } = useAuthContext();
+  const serverUrl = process.env.SERVER_URL || "localhost:3001"
+  const serverProtocol = process.env.SERVER_PROTOCOL || "http"
 
   function login() {
     const data = {
       username: document.getElementById("username").value,
       password: document.getElementById("password").value,
     };
-    axios.post("https://goldfish-app-e5tzq.ondigitalocean.app/finalproject-backend/login", data).then((res) => {
+    axios.post(`${serverProtocol}://${serverUrl}/login`, data).then((res) => {
       console.log("username is", res);
       document.getElementById("username").value = "";
       document.getElementById("password").value = "";
