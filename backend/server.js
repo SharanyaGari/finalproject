@@ -47,6 +47,21 @@ app.use(function (err, req, res, next) {
   }
 });
 
+app.get("/mongo", async (req, res) => {
+  try {
+    await mongoose.connect(url);
+    console.log("mongo connected!!")
+    mongoose.connection.close();
+    return res.status(200).json({msg: "mongo connected"})
+  } catch {
+    console.log(error);
+    res.json({
+      errorCode: 500,
+      message: error.writeErrors[0].err.errmsg,
+    });
+  }
+});
+
 app.post("/login", async (req, res) => {
   const { username, password } = req.body;
 
