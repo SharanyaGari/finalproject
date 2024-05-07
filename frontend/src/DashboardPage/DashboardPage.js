@@ -15,10 +15,13 @@ export default function DashboardPage() {
 
   })
 
+  const serverUrl = process.env.SERVER_URL || "goldfish-app-e5tzq.ondigitalocean.app/finalproject-backend"
+  const serverProtocol = process.env.SERVER_PROTOCOL || "https"
+
   const logout = () => {
     const token = localStorage.getItem('jwt')
     axios.get(
-      "http://localhost:3001/logout",
+      `${serverProtocol}://${serverUrl}/logout`,
       {
         headers: {
           'Authorization': `Bearer ${token}`
@@ -57,7 +60,7 @@ export default function DashboardPage() {
       }
 
       chartInstance = axios.get(
-        "http://localhost:3001/budget",
+        `${serverProtocol}://${serverUrl}/budget`,
         {
           headers: {
             'Authorization': `Bearer ${token}`

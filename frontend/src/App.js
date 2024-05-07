@@ -17,12 +17,15 @@ import { useAuthContext } from "./AuthContext/AuthContext";
 function App() {
   const { authState, setAuthState } = useAuthContext();
 
+  const serverUrl = process.env.SERVER_URL || "goldfish-app-e5tzq.ondigitalocean.app/finalproject-backend"
+  const serverProtocol = process.env.SERVER_PROTOCOL || "https"
+  
   const handleClose = () => {
     const token = localStorage.getItem("jwt");
     const refreshToken = localStorage.getItem("refresh_token");
     axios
       .post(
-        "http://localhost:3001/refresh-token",
+        `${serverProtocol}://${serverUrl}/refresh-token`,
         { refreshToken },
         {
           headers: {

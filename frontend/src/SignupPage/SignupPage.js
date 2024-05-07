@@ -7,13 +7,16 @@ export default function SignupPage() {
   const navigate = useNavigate();
   const { setAuthState } = useAuthContext();
 
+  const serverUrl = process.env.SERVER_URL || "localhost:3001"
+  const serverProtocol = process.env.SERVER_PROTOCOL || "http"
+
   function signup() {
     const newdata = {
       username: document.getElementById("username").value,
       createpassword: document.getElementById("CreatePassword").value,
     };
     console.log("data is", newdata);
-    axios.post("http://localhost:3001/signup", newdata).then((res) => {
+    axios.post(`${serverProtocol}://${serverUrl}/signup`, newdata).then((res) => {
       if (res && res.data && res.data.token) {
         console.log("response for signup is", res);
         const token = res.data.token;

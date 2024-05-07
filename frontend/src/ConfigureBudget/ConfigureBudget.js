@@ -8,10 +8,13 @@ export default function ConfigureBudget() {
   const token = localStorage.getItem("jwt");
   const { authState, setAuthState } = useAuthContext();
 
+  const serverUrl = process.env.SERVER_URL || "goldfish-app-e5tzq.ondigitalocean.app/finalproject-backend"
+  const serverProtocol = process.env.SERVER_PROTOCOL || "https"
+
   const logout = async () => {
     const token = localStorage.getItem('jwt')
     await axios.get(
-      "http://localhost:3001/logout",
+      `${serverProtocol}://${serverUrl}/logout`,
       {
         headers: {
           'Authorization': `Bearer ${token}`
@@ -36,7 +39,7 @@ export default function ConfigureBudget() {
     console.log("data is", budgetData);
     console.log("got token to add budgets", token);
     axios
-      .post("http://localhost:3001/configure", budgetData, {
+      .post(`${serverProtocol}://${serverUrl}/configure`, budgetData, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
